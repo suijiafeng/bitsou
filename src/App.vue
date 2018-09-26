@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header heihgt="100%">
+      <el-header class="g-wrap" heihgt="100%">
         <Mhead/>
       </el-header>
       <router-view/>
-      <el-footer height='100%'>
+      <el-footer class="g-wrap" height='100%'>
         <Mfoot/>
       </el-footer>
     </el-container>
@@ -41,11 +41,8 @@ a {
   display: inline-block;
   text-decoration: none;
 }
-.el-header,
-.el-footer,
-.el-main,
-.el-aside {
-  padding-right: 40px;
+.g-wrap{
+   padding-right: 40px;
   padding-left: 40px;
   min-width: 992px;
 }

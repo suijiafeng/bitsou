@@ -12,8 +12,6 @@
     </el-carousel>
 
     <div class="smr_wrap">
-      <el-row>
-        <el-col :span="17">
           <div class="smr">
             <div class="smr_top">
               <marquee direction="right" scrollamount="10" scrolldelay="50">
@@ -22,7 +20,11 @@
                 </span>
               </marquee>
             </div>
+              
             <div class="smr_bottom">
+             <el-row>
+               <el-col :span="16">
+              <div class="smr_bottom__wrap">
               <a href="/">
                 <dl>
                   <dt>BTC/binance</dt>
@@ -51,19 +53,45 @@
 
                 </dl>
               </a>
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="7">
+              </div>
+              </el-col>
+<el-col :span="8">
           <div class="ad">
             <a href="">
               <img src="../assets/images/ad.png" alt="">
             </a>
           </div>
-        </el-col>
-      </el-row>
+</el-col>
+          </el-row>
+          </div>
+          </div>       
     </div>
+
+<div class="contents  g-wrap">
     <div class="allcoins">
+       <div class="table_tip">
+         <div class="tab">
+           <span>所有币种</span>
+           <span>收藏币种</span>
+         </div>
+         <div class="toolist">
+            <span>下载表格</span>
+            <span>全部</span>
+            <span>人民币</span>
+           <el-autocomplete
+    v-model="state2"
+     size="mini"
+     class="inline-input"
+      placeholder="请输入内容"
+      :trigger-on-focus="false"
+      @select="handleSelect"
+      :fetch-suggestions="querySearch"
+    >
+    <i slot="suffix" class="el-input__icon el-icon-search"></i>
+  </el-autocomplete>
+         </div>
+          </div>
+          <div class="table_main">
       <el-table size="md" :data="tableData" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}">
         <el-table-column type="selection" width="50">
         </el-table-column>
@@ -75,38 +103,25 @@
              <img :src="scope.row.logo_url" alt=""> 
            <!-- <i class="el-icon-time">  </i> -->
             <span style="margin-left: 10px">{{ scope.row.name }}</span></router-link>
-          
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="价格" sortable width="117"> </el-table-column>
-        <el-table-column prop="market_cap" label="流通市值" sortable width="120"> </el-table-column>
-        <el-table-column prop="market_num" label="流通数量" sortable width="118">
+        <el-table-column prop="price" label="价格" sortable> </el-table-column>
+        <el-table-column prop="market_cap" label="流通市值" sortable > </el-table-column>
+        <el-table-column prop="market_num" label="流通数量" sortable>
         </el-table-column>
-        <el-table-column prop="volume24h" label="24H成交额" width="148"> </el-table-column>
-        <el-table-column prop="price_change24h" label="24H涨跌幅" width="138">
+        <el-table-column prop="volume24h" label="24H成交额" > </el-table-column>
+        <el-table-column prop="price_change24h" label="24H涨跌幅" >
         </el-table-column>
-        <el-table-column prop="peity7day1" label="7D价格趋势" width="118">
+        <el-table-column prop="peity7day1" label="7D价格趋势" >
         </el-table-column>
       </el-table>
+       </div>
+    </div>
+    <div class="aside" style="width:400px;background-color:red;height:500px">
+      <div class="kk" style=";"></div>
     </div>
   </div>
-  <!-- <el-container>
-     <el-input v-model="value" @keydown.native.enter="sendmessge()"></el-input>
-    <el-main>
-      <el-carousel>
-        <el-carousel-item v-for="item in banner" :key="item.name">
-          <router-link to="/">
-            <img :src="item.img" alt="">
-          </router-link>
-
-        </el-carousel-item>
-      </el-carousel>
-      Main
-      <el-container>
-        <el-aside width="200px">Aside</el-aside>
-      </el-container>
-    </el-main>
-  </el-container> -->
+  </div>
 </template>
 <script>
 export default {
@@ -116,6 +131,10 @@ export default {
       banner: "",
       websock: "",
       value: "",
+      results: "",
+      restaurants: [],
+      state1: "",
+      state2: "",
       tableData: [
         {
           chinese_name: " BTC-比特币",
@@ -149,7 +168,7 @@ export default {
         .post("/api/v1/coins/all", data)
         .then(response => {
           this.tableData = response.data.data.datas;
-          console.log(response);
+          // console.log(response);
         })
         .catch(function(error) {
           console.log(error);
@@ -171,44 +190,63 @@ export default {
         .catch(err => {
           console.log("err", err);
         });
+    },
+
+    querySearch(queryString, cb) {
+      this.loadAll();
+      var restaurants = this.restaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        cb(results);
+      }, 3000 * Math.random());
+    },
+    createFilter(queryString) {
+      return () => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    loadAll() {
+      const URL = `https://www.bitsou.com/api/v1/home/search`;
+      const data = {
+        token: `c07ee22e-a54d-422f-9f1e-6f06866b5219`,
+        search: this.state2,
+        userId: ""
+      };
+      this.$http
+        .post(URL, data)
+        .then(response => {
+          this.restaurants = response.data.data.coin.datas;
+          const rsl = [];
+          this.restaurants.forEach((v, i) => {
+            rsl.push(v.name);
+          });
+          this.results = rsl;
+          console.log(this.results);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    handleSelect(item) {
+      console.log(item);
     }
-    // initWebpack() {
-    //   //初始化websocket
-    //   // const wsuri = "ws://121.40.165.18:8800";
-    //   const wsuri = "wss://socket.coinex.com/";
-    //   // const wsuri = "wss://echo.websocket.org";
-    //   // const wsuri = "wss://www.bitsou.com/ws/670/mexscry5/websocket";
-    //   this.websock = new WebSocket(wsuri); //这里面的this都指向vue
-    //   this.websock.onopen = this.websocketopen;
-    //   this.websock.onmessage = this.websocketonmessage;
-    //   this.websock.onclose = this.websocketclose;
-    //   this.websock.onerror = this.websocketerror;
-    // },
-    // websocketopen() {
-    //   //打开
-    //   console.log("WebSocket连接成功");
-    //   this.websock.send(this.value);
-    //   const gg = `{"id":1,"method":"server.ping","params":[]}`;
-    //   this.websock.send(gg);
-    // },
-    // websocketonmessage(e) {
-    //   //数据接收
-    //   // this.productinfos = JSON.parse(e.data);
-    //   this.$message(e.data);
-    // },
-    // websocketclose() {
-    //   //关闭
-    //   console.log("WebSocket关闭");
-    // },
-    // websocketerror() {
-    //   //失败
-    //   console.log("WebSocket连接失败");
-    // }
+  },
+  mounted() {
+    console.log(this.restaurants);
   },
   components: {}
 };
 </script>
 <style lang="scss">
+
 .el-aside {
   background-color: #d3dce6;
   color: #333;
@@ -248,18 +286,17 @@ body > .el-container {
   }
 }
 .smr_wrap {
-  padding: 0 40px;
   background-color: #fff;
   .ad {
-    margin-right: 40px;
     text-align: right;
-    width: 100%;
+
     padding-top: 10px;
     img {
       width: 100%;
     }
     a {
-      width: 90%;
+      display: inline-block;
+      width: 300px;
     }
   }
   .smr_top {
@@ -268,9 +305,14 @@ body > .el-container {
     border-bottom: 1px solid #eee;
   }
   .smr_bottom {
-    display: flex;
-    margin-top: 20px;
-    justify-content: space-between;
+    margin-left:40px;
+    margin-right:40px;
+    .smr_bottom__wrap {
+      display: flex;
+      margin-top: 36px;
+      justify-content: space-between;
+    }
+
     .smr_data {
       display: flex;
       justify-content: space-between;
@@ -341,13 +383,43 @@ body > .el-container {
 .el-table th {
   font-weight: 500;
 }
-.el-table .cell a{
-  color:#0077cb
-
+.el-table .cell a {
+  color: #0077cb;
 }
-.el-table .cell a:hover{
-  color:red;
+.el-table .cell a:hover {
+  color: red;
+}
 
+.allcoins {
+  width:100%;
+
+  .table_tip {
+    box-sizing: border-box;
+    padding: 30px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+  }
+  .toolist {
+    .el-autocomplete {
+       box-sizing: border-box;
+      padding-left: 15px;
+      width: 50%;
+    }
+  }
+  .table_main {
+    padding: 0 30px;
+    background-color: #fff;
+  }
+}
+.contents{
+  display: flex;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  justify-content: space-between;
+}
+.aside{
+  margin-left:15px;
 }
 </style>
 
