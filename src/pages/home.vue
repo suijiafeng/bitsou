@@ -7,130 +7,151 @@
           <img :src="item.img" alt="">
         </router-link>
 
-        <!-- <div style="width:100%;height:100%;background-color:red;"></div> -->
+          <!-- <div style="width:100%;height:100%;background-color:red;"></div> -->
       </el-carousel-item>
     </el-carousel>
 
     <div class="smr_wrap">
-          <div class="smr">
-            <div class="smr_top">
-              <marquee direction="right" scrollamount="10" scrolldelay="50">
-                <span>
-                  虚拟币：1100 /代币：1183 /交易平台：300 /24小时成交额：¥922.17亿 /总市值：¥15499.03亿 /GBI指数：8084.57
-                </span>
-              </marquee>
-            </div>
-              
-            <div class="smr_bottom">
-             <el-row>
-               <el-col :span="16">
+      <div class="smr">
+        <div class="smr_top">
+          <marquee direction="right" scrollamount="10" scrolldelay="50">
+            <span>
+              虚拟币：1100 /代币：1183 /交易平台：300 /24小时成交额：¥922.17亿 /总市值：¥15499.03亿 /GBI指数：8084.57
+            </span>
+          </marquee>
+        </div>
+
+        <div class="smr_bottom">
+          <el-row>
+            <el-col :span="16">
               <div class="smr_bottom__wrap">
-              <a href="/">
-                <dl>
-                  <dt>BTC/binance</dt>
+                <a href="/">
+                  <dl>
+                    <dt>BTC/binance</dt>
 
-                  <dd class="arr_down">￥45735</dd>
-                </dl>
-              </a>
-              <a href="/">
-                <dl>
-                  <dt>BTC/binance</dt>
-                  <dd class="arr_up">￥45735</dd>
+                    <dd class="arr_down">￥45735</dd>
+                  </dl>
+                </a>
+                <a href="/">
+                  <dl>
+                    <dt>BTC/binance</dt>
+                    <dd class="arr_up">￥45735</dd>
 
-                </dl>
-              </a>
-              <a href="/">
-                <dl>
-                  <dt>BTC/binance</dt>
+                  </dl>
+                </a>
+                <a href="/">
+                  <dl>
+                    <dt>BTC/binance</dt>
 
-                  <dd class="arr_down">￥45735</dd>
-                </dl>
-              </a>
-              <a href="/">
-                <dl>
-                  <dt>BTC/binance</dt>
-                  <dd class="arr_up">￥45735</dd>
+                    <dd class="arr_down">￥45735</dd>
+                  </dl>
+                </a>
+                <a href="/">
+                  <dl>
+                    <dt>BTC/binance</dt>
+                    <dd class="arr_up">￥45735</dd>
 
-                </dl>
-              </a>
+                  </dl>
+                </a>
               </div>
-              </el-col>
-<el-col :span="8">
-          <div class="ad">
-            <a href="">
-              <img src="../assets/images/ad.png" alt="">
+            </el-col>
+            <el-col :span="8">
+              <div class="ad">
+                <a href="">
+                  <img src="../assets/images/ad.png" alt="">
             </a>
-          </div>
-</el-col>
+              </div>
+            </el-col>
           </el-row>
-          </div>
-          </div>       
+        </div>
+      </div>
     </div>
 
-<div class="contents  g-wrap">
-    <div class="allcoins">
-       <div class="table_tip">
-         <div class="tab">
-           <span>所有币种</span>
-           <span>收藏币种</span>
-         </div>
-         <div class="toolist">
-            <span>下载表格</span>
-            <span>全部</span>
-            <span>人民币</span>
-           <el-autocomplete
-    v-model="state2"
-     size="mini"
-     class="inline-input"
-      placeholder="请输入内容"
-      :trigger-on-focus="false"
-      @select="handleSelect"
-      :fetch-suggestions="querySearch"
-    >
-    <i slot="suffix" class="el-input__icon el-icon-search"></i>
-  </el-autocomplete>
-         </div>
+    <div class="contents  g-wrap">
+      <div class="allcoins">
+        <div class="table_tip">
+          <div class="tab">
+            <span :class="{'active':isclick==='one'}" @click="tab('one')">所有币种</span>
+            <span :class="{'active':isclick==='two'}" @click="tab('two')">收藏币种</span>
           </div>
-          <div class="table_main">
-      <el-table size="md" :data="tableData" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}">
-        <el-table-column type="selection" width="50">
-        </el-table-column>
-        <el-table-column type="index" sortable width="50">
-        </el-table-column>
-        <el-table-column  label="币种" sortable width="170">
-          <template slot-scope="scope">
-            <router-link :to='{path:"cointypeDetail",query:{id:scope.row.coin_id}}'>
-             <img :src="scope.row.logo_url" alt=""> 
-           <!-- <i class="el-icon-time">  </i> -->
-            <span style="margin-left: 10px">{{ scope.row.name }}</span></router-link>
-          </template>
-        </el-table-column>
-        <el-table-column prop="price" label="价格" sortable> </el-table-column>
-        <el-table-column prop="market_cap" label="流通市值" sortable > </el-table-column>
-        <el-table-column prop="market_num" label="流通数量" sortable>
-        </el-table-column>
-        <el-table-column prop="volume24h" label="24H成交额" > </el-table-column>
-        <el-table-column prop="price_change24h" label="24H涨跌幅" >
-        </el-table-column>
-        <el-table-column prop="peity7day1" label="7D价格趋势" >
-        </el-table-column>
-      </el-table>
-       </div>
+          <div class="toolist">
+            <!-- <span>下载表格</span> -->
+            <el-dropdown  trigger="click">
+              <span class="el-dropdown-link">
+                全部
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu  slot="dropdown">
+                <el-dropdown-item>黄金糕</el-dropdown-item>
+                <el-dropdown-item>狮子头</el-dropdown-item>
+                <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                <el-dropdown-item >双皮奶</el-dropdown-item>
+                <el-dropdown-item >蚵仔煎</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-dropdown  trigger="click">
+              <span class="el-dropdown-link">
+                人民币
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu  slot="dropdown">
+                <el-dropdown-item>黄金糕</el-dropdown-item>
+                <el-dropdown-item>狮子头</el-dropdown-item>
+                <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                <el-dropdown-item >双皮奶</el-dropdown-item>
+                <el-dropdown-item >蚵仔煎</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!-- <span>全部</span> -->
+            <!-- <span>人民币</span> -->
+            <el-autocomplete v-model="state2" size="mini" class="inline-input" placeholder="请输入内容" :trigger-on-focus="false" @select="handleSelect" :fetch-suggestions="querySearch">
+              <i slot="suffix" class="el-input__icon el-icon-search"></i>
+            </el-autocomplete>
+          </div>
+        </div>
+        <!-- <tab-list :tablist="tableData"/> -->
+        <div class="table_main">
+          <el-table size="md" :data="tableData" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}">
+            <el-table-column type="selection" width="50">
+            </el-table-column>
+            <el-table-column type="index" sortable width="50">
+            </el-table-column>
+            <el-table-column label="币种" sortable width="170">
+              <template slot-scope="scope">
+                <router-link :to='{path:"cointypeDetail",query:{id:scope.row.coin_id}}'>
+                  <img :src="scope.row.logo_url" alt="">
+                  <span style="margin-left: 10px">{{ scope.row.name }}</span></router-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="price" label="价格" sortable> </el-table-column>
+            <el-table-column prop="market_cap" label="流通市值" sortable> </el-table-column>
+            <el-table-column prop="market_num" label="流通数量" sortable>
+            </el-table-column>
+            <el-table-column prop="volume24h" label="24H成交额"> </el-table-column>
+            <el-table-column prop="price_change24h" label="24H涨跌幅">
+            </el-table-column>
+            <el-table-column prop="peity7day1" label="7D价格趋势">
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="aside" style="width:400px;background-color:red;height:500px">
+        <div class="kk" style=";"></div>
+      </div>
     </div>
-    <div class="aside" style="width:400px;background-color:red;height:500px">
-      <div class="kk" style=";"></div>
-    </div>
-  </div>
   </div>
 </template>
 <script>
+import tabList from "../components/tablelist";
 export default {
   name: "home",
   data() {
     return {
+      isclick: "one",
       banner: "",
       websock: "",
       value: "",
+      temp: null,
       results: "",
       restaurants: [],
       state1: "",
@@ -237,16 +258,25 @@ export default {
     },
     handleSelect(item) {
       console.log(item);
+    },
+    tab(v) {
+      if (v === "one") {
+        this.isclick = v;
+        this.tableData = this.temp;
+      } else if (v === "two") {
+        this.isclick = v;
+        this.temp = this.tableData;
+        this.tableData = "";
+      }
     }
   },
-  mounted() {
-    console.log(this.restaurants);
-  },
-  components: {}
+  mounted() {},
+  components: {
+    tabList
+  }
 };
 </script>
 <style lang="scss">
-
 .el-aside {
   background-color: #d3dce6;
   color: #333;
@@ -305,8 +335,8 @@ body > .el-container {
     border-bottom: 1px solid #eee;
   }
   .smr_bottom {
-    margin-left:40px;
-    margin-right:40px;
+    margin-left: 40px;
+    margin-right: 40px;
     .smr_bottom__wrap {
       display: flex;
       margin-top: 36px;
@@ -391,7 +421,7 @@ body > .el-container {
 }
 
 .allcoins {
-  width:100%;
+  width: 100%;
 
   .table_tip {
     box-sizing: border-box;
@@ -401,8 +431,15 @@ body > .el-container {
     justify-content: space-between;
   }
   .toolist {
+    width:60%;
+    .el-dropdown{
+      margin-left:20px;
+    }
+    span{
+      cursor: pointer;
+    }
     .el-autocomplete {
-       box-sizing: border-box;
+      box-sizing: border-box;
       padding-left: 15px;
       width: 50%;
     }
@@ -412,14 +449,30 @@ body > .el-container {
     background-color: #fff;
   }
 }
-.contents{
+.contents {
   display: flex;
   margin-top: 15px;
   margin-bottom: 15px;
   justify-content: space-between;
 }
-.aside{
-  margin-left:15px;
+.aside {
+  margin-left: 15px;
+}
+
+.tab {
+  .active {
+    color: #333;
+    border-bottom-color: #fed017;
+  }
+  span {
+    cursor: pointer;
+    color: #999;
+    font-weight: 700;
+    font-size: 18px;
+    padding-bottom: 6px;
+    margin-left: 20px;
+    border-bottom: 3px solid transparent;
+  }
 }
 </style>
 
