@@ -76,30 +76,26 @@
           </div>
           <div class="toolist">
             <!-- <span>下载表格</span> -->
-            <el-dropdown  trigger="click">
+            <el-dropdown @command="handleCommand">
               <span class="el-dropdown-link">
-                全部
+                {{dropvalue}}
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
-              <el-dropdown-menu  slot="dropdown">
-                <el-dropdown-item>黄金糕</el-dropdown-item>
-                <el-dropdown-item>狮子头</el-dropdown-item>
-                <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                <el-dropdown-item >双皮奶</el-dropdown-item>
-                <el-dropdown-item >蚵仔煎</el-dropdown-item>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="全部">全部</el-dropdown-item>
+                <el-dropdown-item command="货币">货币</el-dropdown-item>
+                <el-dropdown-item command="代币">代币</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown  trigger="click">
+            <el-dropdown @command="handleCommand2">
               <span class="el-dropdown-link">
-                人民币
+                {{dropvalue2}}
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
-              <el-dropdown-menu  slot="dropdown">
-                <el-dropdown-item>黄金糕</el-dropdown-item>
-                <el-dropdown-item>狮子头</el-dropdown-item>
-                <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                <el-dropdown-item >双皮奶</el-dropdown-item>
-                <el-dropdown-item >蚵仔煎</el-dropdown-item>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="人民币">人民币(CNY)</el-dropdown-item>
+                <el-dropdown-item command="美元">美元(USD)</el-dropdown-item>
+
               </el-dropdown-menu>
             </el-dropdown>
             <!-- <span>全部</span> -->
@@ -114,9 +110,9 @@
           <el-table size="md" :data="tableData" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}">
             <el-table-column type="selection" width="50">
             </el-table-column>
-            <el-table-column type="index" sortable width="50">
+            <el-table-column  prop="id_stor" label="#"  width="50">
             </el-table-column>
-            <el-table-column label="币种" sortable width="170">
+            <el-table-column label="币种"  width="170">
               <template slot-scope="scope">
                 <router-link :to='{path:"cointypeDetail",query:{id:scope.row.coin_id}}'>
                   <img :src="scope.row.logo_url" alt="">
@@ -133,10 +129,14 @@
             <el-table-column prop="peity7day1" label="7D价格趋势">
             </el-table-column>
           </el-table>
+          <div class="pagetation">
+            <el-pagination background  :page-size="pageSize" @current-change="pageto" layout="prev, pager, next" :total="pageTotal">
+            </el-pagination>
+          </div>
         </div>
       </div>
       <div class="aside" style="width:400px;background-color:red;height:500px">
-        <div class="kk" style=";"></div>
+
       </div>
     </div>
   </div>
@@ -147,6 +147,8 @@ export default {
   name: "home",
   data() {
     return {
+      dropvalue: "全部",
+      dropvalue2: "人民币",
       isclick: "one",
       banner: "",
       websock: "",
@@ -156,6 +158,9 @@ export default {
       restaurants: [],
       state1: "",
       state2: "",
+      pageTotal: null,
+      pageNum: 1,
+      pageSize: 18,
       tableData: [
         {
           chinese_name: " BTC-比特币",
@@ -177,18 +182,30 @@ export default {
     // this.websocketclose();
   },
   methods: {
+   pageto(v){
+     this.pageNum=v
+     this.getmessage1()
+    },
+    handleCommand(command) {
+      this.dropvalue = command;
+    },
+    handleCommand2(command) {
+      this.dropvalue2 = command;
+    },
     getmessage1() {
       const data = {
         token: ` bc092237-74f6-49f4-af44-4754f9e98091`,
-        pageNum: 2,
+        pageNum: this.pageNum,
         userId: "",
-        pageSize: 18,
+        pageSize: this.pageSize,
         isToken: ""
       };
       this.$http
         .post("/api/v1/coins/all", data)
         .then(response => {
-          this.tableData = response.data.data.datas;
+          const allTata = response.data.data;
+          this.tableData = allTata.datas;
+          this.pageTotal = allTata.pageTotal;
           // console.log(response);
         })
         .catch(function(error) {
@@ -266,7 +283,7 @@ export default {
       } else if (v === "two") {
         this.isclick = v;
         this.temp = this.tableData;
-        this.tableData = "";
+        this.tableData = [];
       }
     }
   },
@@ -431,11 +448,11 @@ body > .el-container {
     justify-content: space-between;
   }
   .toolist {
-    width:60%;
-    .el-dropdown{
-      margin-left:20px;
+    width: 60%;
+    .el-dropdown {
+      margin-left: 20px;
     }
-    span{
+    span {
       cursor: pointer;
     }
     .el-autocomplete {
@@ -447,6 +464,10 @@ body > .el-container {
   .table_main {
     padding: 0 30px;
     background-color: #fff;
+    .pagetation {
+      text-align: right;
+      padding: 45px 15px 25px;
+    }
   }
 }
 .contents {
@@ -473,6 +494,10 @@ body > .el-container {
     margin-left: 20px;
     border-bottom: 3px solid transparent;
   }
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: #fed017;
 }
 </style>
 
