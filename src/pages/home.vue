@@ -7,7 +7,7 @@
           <img :src="item.img" alt="">
         </router-link>
 
-          <!-- <div style="width:100%;height:100%;background-color:red;"></div> -->
+        <!-- <div style="width:100%;height:100%;background-color:red;"></div> -->
       </el-carousel-item>
     </el-carousel>
 
@@ -59,7 +59,7 @@
               <div class="ad">
                 <a href="">
                   <img src="../assets/images/ad.png" alt="">
-            </a>
+                </a>
               </div>
             </el-col>
           </el-row>
@@ -110,13 +110,14 @@
           <el-table size="md" :data="tableData" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}">
             <el-table-column type="selection" width="50">
             </el-table-column>
-            <el-table-column  prop="id_stor" label="#"  width="50">
+            <el-table-column prop="id_stor" label="#" width="50">
             </el-table-column>
-            <el-table-column label="币种"  width="170">
+            <el-table-column label="币种" width="170">
               <template slot-scope="scope">
                 <router-link :to='{path:"cointypeDetail",query:{id:scope.row.coin_id}}'>
                   <img :src="scope.row.logo_url" alt="">
-                  <span style="margin-left: 10px">{{ scope.row.name }}</span></router-link>
+                  <span style="margin-left: 10px">{{ scope.row.name }}</span>
+                </router-link>
               </template>
             </el-table-column>
             <el-table-column prop="price" label="价格" sortable> </el-table-column>
@@ -130,13 +131,29 @@
             </el-table-column>
           </el-table>
           <div class="pagetation">
-            <el-pagination background  :page-size="pageSize" @current-change="pageto" layout="prev, pager, next" :total="pageTotal">
+            <el-pagination background :page-size="pageSize" @current-change="pageto" layout="prev, pager, next" :total="pageTotal">
             </el-pagination>
           </div>
         </div>
       </div>
-      <div class="aside" style="width:400px;background-color:red;height:500px">
-
+      <div class="aside">
+        <div class="aside_item">
+          <div class="aside_item__title">
+            <h2>最新资讯</h2>
+            <a class="more_link" href="/">更多</a>
+          </div>
+          <div class="aside_item_con">
+            <ul>
+              <li v-for="notice in notices">
+                <a :href="notice.url">
+                  <span class="text">
+                    <i class="aside-icon"><img :src="notice.logo" alt=""></i>{{notice.title}}</span>
+                  <span class="date">{{notice.time | timefamter }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -161,6 +178,7 @@ export default {
       pageTotal: null,
       pageNum: 1,
       pageSize: 18,
+      notices: [],
       tableData: [
         {
           chinese_name: " BTC-比特币",
@@ -176,15 +194,21 @@ export default {
   },
   created() {
     this.getbanner(), this.getmessage1();
+    this.asideMsg();
     // this.initWebpack(),
   },
   beforeDestroy() {
     // this.websocketclose();
   },
+  filters: {
+    timefamter(v){
+      return v.substr(5,11)
+    }
+  },
   methods: {
-   pageto(v){
-     this.pageNum=v
-     this.getmessage1()
+    pageto(v) {
+      this.pageNum = v;
+      this.getmessage1();
     },
     handleCommand(command) {
       this.dropvalue = command;
@@ -268,6 +292,17 @@ export default {
           });
           this.results = rsl;
           console.log(this.results);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    asideMsg() {
+      const URL = `https://www.bitsou.com/api/v1/home/notice`;
+      this.$http
+        .post(URL)
+        .then(response => {
+          this.notices = response.data.data.datas;
         })
         .catch(function(error) {
           console.log(error);
@@ -498,6 +533,62 @@ body > .el-container {
 
 .el-pagination.is-background .el-pager li:not(.disabled).active {
   background-color: #fed017;
+}
+
+.aside {
+  width:400px;
+  // height: 600px;
+
+  .aside_item {
+      background-color: #fff;
+      padding-bottom: 50px;
+    .aside_item__title {
+      display: flex;
+      justify-content: space-between;
+      h2 {
+        font-weight: 700;
+        color: #333;
+        font-size: 18px;
+        padding-left: 15px;
+      }
+      .more_link {
+        width: 50px;
+        height: 50px;
+        display: inline-block;
+        color: #666666;
+        line-height: 50px;
+      }
+    }
+    .aside_item_con {
+      li {
+        padding: 0 15px;
+      }
+      .aside-icon{
+        margin-right:5px;
+      }
+      a {
+        line-height: 45px;
+        border-bottom: 1px solid #eee;
+        color: #666;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+        &:hover{
+          .text{
+ color:#f00300
+          }
+         
+        }
+      }
+      .text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 170px;
+        display: inline-block;
+      }
+    }
+  }
 }
 </style>
 
