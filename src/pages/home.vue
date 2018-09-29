@@ -34,22 +34,22 @@
                 </a>
                 <a href="/">
                   <dl>
-                    <dt>BTC/binance</dt>
+                    <dt>ETH /binance</dt>
                     <dd class="arr_up">￥45735</dd>
 
                   </dl>
                 </a>
                 <a href="/">
                   <dl>
-                    <dt>BTC/binance</dt>
+                    <dt>BCH /binance</dt>
 
-                    <dd class="arr_down">￥45735</dd>
+                    <dd class="arr_down">￥3704</dd>
                   </dl>
                 </a>
                 <a href="/">
                   <dl>
-                    <dt>BTC/binance</dt>
-                    <dd class="arr_up">￥45735</dd>
+                    <dt>EOS /binance</dt>
+                    <dd class="arr_up">￥39.47</dd>
 
                   </dl>
                 </a>
@@ -201,8 +201,8 @@ export default {
     // this.websocketclose();
   },
   filters: {
-    timefamter(v){
-      return v.substr(5,11)
+    timefamter(v) {
+      return v.substr(5, 11);
     }
   },
   methods: {
@@ -536,12 +536,12 @@ body > .el-container {
 }
 
 .aside {
-  width:400px;
+  width: 400px;
   // height: 600px;
 
   .aside_item {
-      background-color: #fff;
-      padding-bottom: 50px;
+    background-color: #fff;
+    padding-bottom: 50px;
     .aside_item__title {
       display: flex;
       justify-content: space-between;
@@ -557,14 +557,17 @@ body > .el-container {
         display: inline-block;
         color: #666666;
         line-height: 50px;
+        &:hover {
+          color: #f00300;
+        }
       }
     }
     .aside_item_con {
       li {
         padding: 0 15px;
       }
-      .aside-icon{
-        margin-right:5px;
+      .aside-icon {
+        margin-right: 5px;
       }
       a {
         line-height: 45px;
@@ -573,11 +576,10 @@ body > .el-container {
         font-size: 14px;
         display: flex;
         justify-content: space-between;
-        &:hover{
-          .text{
- color:#f00300
+        &:hover {
+          .text {
+            color: #f00300;
           }
-         
         }
       }
       .text {
