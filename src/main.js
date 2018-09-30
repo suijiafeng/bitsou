@@ -7,7 +7,9 @@ import QS from 'qs'
 import Axios from 'axios'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import Echarts from 'echarts';
 Vue.use(ElementUI);
+Vue.prototype.$echarts = Echarts
 
 
 Vue.prototype.$http=Axios

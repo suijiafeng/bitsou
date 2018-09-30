@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "cors": "^2.8.4",
+    "echarts": "^4.2.0-rc.1",
     "element-ui": "^2.4.7",
     "mint-ui": "^2.2.13",
     "vue": "^2.5.2",

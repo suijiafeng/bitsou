@@ -7,7 +7,7 @@
           <img :src="item.img" alt="">
         </router-link>
 
-        <!-- <div style="width:100%;height:100%;background-color:red;"></div> -->
+          <!-- <div style="width:100%;height:100%;background-color:red;"></div> -->
       </el-carousel-item>
     </el-carousel>
 
@@ -138,6 +138,15 @@
       </div>
       <div class="aside">
         <div class="aside_item">
+          <div class="aside_item__title" style="padding-right:15px;">
+          <div id="echarts_pie" style="width:130px;height:130px;"></div>
+          <div class="nub" style="font-size:14px;">
+            <p>币种总市值￥15,688亿</p>
+            <p>币种总数量2468个</p>
+          </div>
+          </div>
+        </div>
+        <div class="aside_item">
           <div class="aside_item__title">
             <h2>最新资讯</h2>
             <a class="more_link" href="/">更多</a>
@@ -193,8 +202,8 @@ export default {
     };
   },
   created() {
-    this.getbanner(), this.getmessage1();
-    this.asideMsg();
+    this.getbanner(), this.getmessage1(), this.asideMsg();
+
     // this.initWebpack(),
   },
   beforeDestroy() {
@@ -320,9 +329,58 @@ export default {
         this.temp = this.tableData;
         this.tableData = [];
       }
+    },
+    initEcharts() {
+      this.$echarts.init(document.getElementById("echarts_pie")).setOption({
+        title: {},
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+        legend: {
+          show: false,
+          orient: "vhorizontal",
+          data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
+        },
+        series: [
+          {
+            name: "访问来源",
+            type: "pie",
+            radius: ["60%", "80%"],
+            avoidLabelOverlap: false,
+            label: {
+              normal: {
+                show: false,
+                position: "center"
+              },
+              emphasis: {
+                show: false,
+                textStyle: {
+                  fontSize: "12",
+                  fontWeight: "bold"
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: false
+              }
+            },
+            data: [
+              { value: 335, name: "直接访问" },
+              { value: 310, name: "邮件营销" },
+              { value: 234, name: "联盟广告" },
+              { value: 135, name: "视频广告" },
+              { value: 1548, name: "搜索引擎" }
+            ]
+          }
+        ]
+      });
     }
   },
-  mounted() {},
+  mounted() {
+    this.initEcharts();
+  },
   components: {
     tabList
   }
@@ -542,6 +600,7 @@ body > .el-container {
   .aside_item {
     background-color: #fff;
     padding-bottom: 50px;
+    margin-bottom: 20px;
     .aside_item__title {
       display: flex;
       justify-content: space-between;
