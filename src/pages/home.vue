@@ -139,11 +139,11 @@
       <div class="aside">
         <div class="aside_item">
           <div class="aside_item__title" style="padding-right:15px;">
-          <div id="echarts_pie" style="width:130px;height:130px;"></div>
-          <div class="nub" style="font-size:14px;">
+          <div id="echarts_pie" style="width:100%;height:130px;"></div>
+          <!-- <div class="nub" style="font-size:14px;">
             <p>币种总市值￥15,688亿</p>
             <p>币种总数量2468个</p>
-          </div>
+          </div> -->
           </div>
         </div>
         <div class="aside_item">
@@ -338,7 +338,9 @@ export default {
           formatter: "{a} <br/>{b}: {c} ({d}%)"
         },
         legend: {
-          show: false,
+          show: true,
+          x:'right',
+          y:'10px',
           orient: "vhorizontal",
           data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
         },
@@ -346,6 +348,7 @@ export default {
           {
             name: "访问来源",
             type: "pie",
+            center:['30%','50%'],
             radius: ["60%", "80%"],
             avoidLabelOverlap: false,
             label: {
