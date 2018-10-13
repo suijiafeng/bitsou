@@ -138,13 +138,40 @@
       </div>
       <div class="aside">
         <div class="aside_item">
-          <div class="aside_item__title" style="padding-right:15px;">
-          <div id="echarts_pie" style="width:100%;height:130px;"></div>
-          <!-- <div class="nub" style="font-size:14px;">
-            <p>币种总市值￥15,688亿</p>
-            <p>币种总数量2468个</p>
-          </div> -->
+          <div class="aside_item__title">
+            <div id="echarts_pie" style="width:120px;height:130px;"></div>
+            <div class="nub">
+              <p>币种总市值<strong>￥{{coinHeard.tota|ceil}}亿</strong></p>
+              <p>币种总数量<strong>{{coinHeard.number}}个</strong></p>
+            </div>
+
           </div>
+          <ol class="ec_lists">
+            <li>
+              <span><b class="order">1</b>{{coinHeard.rankName1}}/￥{{coinHeard.tota4|ceil}}亿</span>
+              <span style="font-weight:700;width:45px;">{{coinHeard.proportion1s}}%</span>
+            </li>
+            <li>
+              <span><b class="order">2</b>{{coinHeard.rankName2}}/￥{{coinHeard.tota3|ceil}}亿</span>
+              <span style="font-weight:700;width:45px;">{{coinHeard.proportion2s}}%</span>
+            </li>
+            <li>
+              <span><b class="order">3</b>{{coinHeard.rankName3}}/￥{{coinHeard.tota2|ceil}}亿</span>
+              <span style="font-weight:700;width:45px;">{{coinHeard.proportion3s}}%</span>
+            </li>
+            <li>
+              <span><b class="order">4</b>{{coinHeard.rankName4}}/￥{{coinHeard.tota1|ceil}}亿</span>
+              <span style="font-weight:700;width:45px;">{{coinHeard.proportion4s}}%</span>
+            </li>
+            <!-- <li>
+              <span><b class="order">1</b>BTC-比特币 /￥7,549亿</span>
+              <span style="font-weight:700">52.86%</span>
+            </li>
+            <li>
+              <span><b class="order">1</b>BTC-比特币 /￥7,549亿</span>
+              <span style="font-weight:700">52.86%</span>
+            </li> -->
+          </ol>
         </div>
         <div class="aside_item">
           <div class="aside_item__title">
@@ -153,7 +180,7 @@
           </div>
           <div class="aside_item_con">
             <ul>
-              <li v-for="notice in notices">
+              <li v-for="notice in notices" :key="notice.id">
                 <a :href="notice.url">
                   <span class="text">
                     <i class="aside-icon"><img :src="notice.logo" alt=""></i>{{notice.title}}</span>
@@ -188,6 +215,8 @@ export default {
       pageNum: 1,
       pageSize: 18,
       notices: [],
+      coinHeard: "",
+      coinHeardE: [],
       tableData: [
         {
           chinese_name: " BTC-比特币",
@@ -202,9 +231,12 @@ export default {
     };
   },
   created() {
-    this.getbanner(), this.getmessage1(), this.asideMsg();
-
-    // this.initWebpack(),
+    this.init();
+  },
+  mounted() {
+    this.$nextTick(function() {
+      this.initEcharts()
+    });
   },
   beforeDestroy() {
     // this.websocketclose();
@@ -212,9 +244,18 @@ export default {
   filters: {
     timefamter(v) {
       return v.substr(5, 11);
+    },
+    ceil(num) {
+      return Math.ceil(num);
     }
   },
   methods: {
+    init() {
+      this.getbanner();
+      this.getmessage1();
+      this.asideMsg();
+      this.getCoinsHead();
+    },
     pageto(v) {
       this.pageNum = v;
       this.getmessage1();
@@ -262,7 +303,45 @@ export default {
           console.log("err", err);
         });
     },
+    getCoinsHead() {
+      this.$http
+        .post("api/v1/coins/coinHeard")
+        .then(res => {
+          if (res.data.code === 1) {
+            this.coinHeard = res.data.data;
+            // console.log(this.coinHeard);
+            let arr = [];
+            let rankName = [];
+            let tota = [];
+            let proportion = [];
 
+            for (let i in this.coinHeard) {
+              if (i.startsWith("rankName")) {
+                rankName.push(this.coinHeard[i]);
+              } else if (i.startsWith("tota")) {
+                if (i != "tota") {
+                  // console.log(this.coinHeard[i])
+                  tota.push(this.coinHeard[i]);
+                }
+              } else if (i.startsWith("proportion")) {
+                proportion.push(this.coinHeard[i]);
+              }
+            }
+            for (let i = 0; i < rankName.length; i++) {
+              arr.push({
+                tota: tota[i],
+                value: proportion[i],
+                name: rankName[i]
+              });
+            }
+            this.coinHeardE = arr;
+          }
+          this.initEcharts();
+        })
+        .catch(err => {
+          console.log("err", err);
+        });
+    },
     querySearch(queryString, cb) {
       this.loadAll();
       var restaurants = this.restaurants;
@@ -335,20 +414,34 @@ export default {
         title: {},
         tooltip: {
           trigger: "item",
-          formatter: "{a} <br/>{b}: {c} ({d}%)"
+          backgroundColor: "#e7e7e7e0",
+          padding: 10,
+          borderColor:"#999",
+          textStyle: {
+            color: "#666"
+          },
+          extraCssText: "box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);",
+          
+          formatter: function (params) {
+            // console.log(params)
+            return `${params.data.name}:${params.data.value}%</br> 市值:${params.data.tota}亿`
+
+}
         },
-        legend: {
-          show: true,
-          x:'right',
-          y:'10px',
-          orient: "vhorizontal",
-          data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
-        },
+        // legend: {
+        //   show: false,
+        //   x: "right",
+        //   y: "10px",
+        //   orient: "vhorizontal",
+        //   data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
+        // },
         series: [
           {
             name: "访问来源",
             type: "pie",
-            center:['30%','50%'],
+            color: ["#73bee3", "#fed017", "#fea6a1", "#7fbf80", "#d26e38"],
+            hoverAnimation: true, //扇形半径动画效果
+            // center: ["30%", "50%"],
             radius: ["60%", "80%"],
             avoidLabelOverlap: false,
             label: {
@@ -359,35 +452,38 @@ export default {
               emphasis: {
                 show: false,
                 textStyle: {
-                  fontSize: "12",
-                  fontWeight: "bold"
+                  fontSize: "12"
+                  // fontWeight: "bold"
                 }
               }
             },
+
             labelLine: {
               normal: {
                 show: false
               }
             },
-            data: [
-              { value: 335, name: "直接访问" },
-              { value: 310, name: "邮件营销" },
-              { value: 234, name: "联盟广告" },
-              { value: 135, name: "视频广告" },
-              { value: 1548, name: "搜索引擎" }
-            ]
+            data: this.coinHeardE
+
+            // [
+            //   { value: 335, name: "直接访问" },
+            //   { value: 310, name: "邮件营销" },
+            //   { value: 234, name: "联盟广告" },
+            //   { value: 135, name: "视频广告" },
+            //   { value: 1548, name: "搜索引擎" }
+            // ]
           }
         ]
       });
     }
   },
-  mounted() {
-    this.initEcharts();
-  },
+
   components: {
     tabList
   }
 };
+
+
 </script>
 <style lang="scss">
 .el-aside {
@@ -602,7 +698,7 @@ body > .el-container {
 
   .aside_item {
     background-color: #fff;
-    padding-bottom: 50px;
+    padding: 0 15px 50px;
     margin-bottom: 20px;
     .aside_item__title {
       display: flex;
@@ -611,11 +707,10 @@ body > .el-container {
         font-weight: 700;
         color: #333;
         font-size: 18px;
-        padding-left: 15px;
       }
       .more_link {
-        width: 50px;
         height: 50px;
+        font-size: 14px;
         display: inline-block;
         color: #666666;
         line-height: 50px;
@@ -624,24 +719,73 @@ body > .el-container {
         }
       }
     }
+    .nub {
+      color: #333;
+      font-size: 14px;
+      margin-top: 15px;
+      strong {
+        color: #000;
+      }
+    }
+    .ec_lists {
+      color: #666;
+      font-size: 12px;
+
+      li {
+        display: flex;
+        margin-top: 12px;
+        justify-content: space-between;
+
+        &:nth-child(1) {
+          .order {
+            background-color: #73bee3;
+          }
+        }
+        &:nth-child(2) {
+          .order {
+            background-color: #fed017;
+          }
+        }
+        &:nth-child(3) {
+          .order {
+            background-color: #fea6a1;
+          }
+        }
+        &:nth-child(4) {
+          .order {
+            background-color: #7fbf80;
+          }
+        }
+        .order {
+          color: #fff;
+          width: 15px;
+          height: 15px;
+          line-height: 15px;
+          text-align: center;
+          margin-right: 5px;
+          display: inline-block;
+        }
+      }
+    }
     .aside_item_con {
       li {
-        padding: 0 15px;
       }
       .aside-icon {
         margin-right: 5px;
       }
       a {
-        line-height: 45px;
         border-bottom: 1px solid #eee;
         color: #666;
-        font-size: 14px;
+        font-size: 13px;
         display: flex;
         justify-content: space-between;
         &:hover {
           .text {
             color: #f00300;
           }
+        }
+        span {
+          line-height: 45px;
         }
       }
       .text {

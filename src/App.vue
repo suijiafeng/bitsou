@@ -29,7 +29,7 @@ body {
   background: #e8e8e8;
   color: #333;
 }
-ul,
+ul,ol,
 li,dl,dt,dd {
   margin: 0;
   padding: 0;
